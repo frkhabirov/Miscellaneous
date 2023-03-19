@@ -1,0 +1,555 @@
+{
+	"info": {
+		"_postman_id": "af8e031b-ee95-46e1-969d-8330e1465983",
+		"name": "gorest.co.in",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18853379"
+	},
+	"item": [
+		{
+			"name": "Получение списка пользователей",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение списка пользователей (стр.12)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users?page=12",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "12"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post запрос без body",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление нового пользователя",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"if (Math.random()>0.5) {\r",
+							"    pm.collectionVariables.set('gender','male')\r",
+							"}\r",
+							"else {\r",
+							"    pm.collectionVariables.set('gender','female')\r",
+							"}\r",
+							"\r",
+							"if (Math.random()>0.5) {\r",
+							"    pm.collectionVariables.set('status','active')\r",
+							"}\r",
+							"else {\r",
+							"    pm.collectionVariables.set('status', 'inactive')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userID;\r",
+							"var userName;\r",
+							"userID = pm.response.json().id;\r",
+							"pm.collectionVariables.set('userID',userID);\r",
+							"userName = pm.response.json().name;\r",
+							"pm.collectionVariables.set('userName',userName)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"gender\": \"{{gender}}\",\r\n    \"status\": \"{{status}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Просмотр данных пользователя",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление и просмотр нескольких пользователей",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userGender;\r",
+							"var userStatus;\r",
+							"var userEmail;\r",
+							"var createBody;\r",
+							"const userName = pm.collectionVariables.get(\"userName\");\r",
+							"const token = pm.collectionVariables.get(\"myToken\");\r",
+							"const queryToken = \"Bearer \"+token.toString();\r",
+							"var create;\r",
+							"function createNewRequest() {\r",
+							"    create = {\r",
+							"    method: 'POST',\r",
+							"    url: 'https://gorest.co.in/public/v2/users',\r",
+							"    header: {\r",
+							"        \"Content-Type\": 'application/json',\r",
+							"        \"Authorization\": queryToken,\r",
+							"        \"User-Agent\": \"PostmanRuntime/7.31.1\"\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: \"raw\",\r",
+							"        raw: JSON.stringify(createBody)\r",
+							"    }\r",
+							"}\r",
+							"}\r",
+							"function addUser(i) {\r",
+							"    if (Math.random()>0.5) {\r",
+							"        userGender=`male`;\r",
+							"    }\r",
+							"    else {\r",
+							"        userGender=`female`;\r",
+							"    };\r",
+							"    \r",
+							"    if (Math.random()>0.5) {\r",
+							"        userStatus=\"active\";\r",
+							"    }\r",
+							"    else {\r",
+							"        userStatus=\"inactive\"; \r",
+							"   };\r",
+							"    userEmail=Math.random().toString(5)+\"@ya.ru\";\r",
+							"        \r",
+							"    createBody = {\r",
+							"    \"name\": userName,\r",
+							"    \"email\": userEmail,\r",
+							"    \"gender\": userGender,\r",
+							"    \"status\": userStatus\r",
+							"    };\r",
+							"    createNewRequest();\r",
+							"        \r",
+							"    pm.sendRequest(create, function(err, response) {\r",
+							"        userIDList[i] = response.json().id;\r",
+							"        console.log(response.json());\r",
+							"           \r",
+							"    });\r",
+							"    \r",
+							"pm.collectionVariables.set('userIDList',userIDList);\r",
+							"}\r",
+							"var userIDList=[];\r",
+							"for (let i=0; i<3; i++) {\r",
+							"    addUser(i);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var userIdList=[];\r",
+							"var JSONData=pm.response.json()\r",
+							"for (let item of JSONData) {\r",
+							"    userIdList.push(item.id)\r",
+							"\r",
+							"}\r",
+							"pm.collectionVariables.set(\"userIDList\",userIdList)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users?name={{userName}}",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{userName}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Редактирование данных пользователя (PUT)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Редактирование данных пользователя (PATCH)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userStatus;\r",
+							"userStatus=pm.collectionVariables.get(\"status\");\r",
+							"console.log(userStatus);\r",
+							"function chStatus () {\r",
+							"    if(userStatus==\"active\") {\r",
+							"    userStatus=\"inactive\";\r",
+							"}\r",
+							"else {\r",
+							"    userStatus=\"active\";\r",
+							"};\r",
+							"}\r",
+							"chStatus();\r",
+							"console.log(userStatus);\r",
+							"pm.collectionVariables.set(\"status\",userStatus);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"status\": \"{{status}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление пользователя",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Зачистка",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIdList = pm.collectionVariables.get(\"userIDList\")\r",
+							"const token = pm.collectionVariables.get(\"myToken\")\r",
+							"function onIdDeletion(i) {\r",
+							"    queryUrl = \"https://gorest.co.in/public/v2/users/\"+userIdList[i].toString()\r",
+							"    queryToken = \"Bearer \"+token.toString()\r",
+							"    var del = {\r",
+							"        method: \"DELETE\",\r",
+							"        url: queryUrl,\r",
+							"        header: {\r",
+							"            \"Content-Type\": 'application/json',\r",
+							"            \"Authorization\": queryToken,\r",
+							"            \"User-Agent\": \"PostmanRuntime/7.31.1\",\r",
+							"        }\r",
+							"    }\r",
+							"    pm.sendRequest(del, function(err,response) {\r",
+							"\r",
+							"    })\r",
+							"}\r",
+							"\r",
+							"for (let i=0; i<userIdList.length; i++) {\r",
+							"    onIdDeletion(i)\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{userName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "0b710b8511cd787c50eed14717328dd2c1b4c28b12a2df4e898dd814f3fe1ec4",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "myToken",
+			"value": "0b710b8511cd787c50eed14717328dd2c1b4c28b12a2df4e898dd814f3fe1ec4",
+			"type": "string"
+		},
+		{
+			"key": "gender",
+			"value": ""
+		},
+		{
+			"key": "status",
+			"value": ""
+		},
+		{
+			"key": "userID",
+			"value": ""
+		},
+		{
+			"key": "userName",
+			"value": ""
+		},
+		{
+			"key": "userEmail",
+			"value": ""
+		},
+		{
+			"key": "userIDList",
+			"value": ""
+		}
+	]
+}
